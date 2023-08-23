@@ -1,0 +1,9 @@
+---
+- hosts: RHEL
+  vars:
+    salutations: Hello Everyone
+  tasks:
+    - name: Example of user defined variables.
+      debug:
+        msg: "{{ salutations }}"
+...

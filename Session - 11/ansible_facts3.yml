@@ -1,0 +1,9 @@
+- name: Ansible playbook for making an entry in the /etc/hosts file.
+  hosts: all
+  become: true
+  tasks:
+    - name: Append the ip address and hostname information.
+      lineinfile:
+        line: "{{ ansible_default_ipv4['address'] }} {{ ansible_fqdn }} {{ ansible_hostname }}"
+        dest: /etc/hosts
+...

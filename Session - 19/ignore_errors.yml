@@ -1,0 +1,22 @@
+---
+- name: ignore errors example
+  hosts: RHEL
+  become: true
+  tasks:
+    - name: Checking the cockpit service status.
+      command: systemctl is-active cockpit.socket
+      register: abc
+      ignore_errors: yes
+    - debug:
+        msg: "{{ abc }}"
+    - name: Starting the cockpit service if not running.
+      service:
+        name: cockpit.socket
+        state: started
+      when: abc.rc !=0
+    - name: Restarting the cockpit service if already running.
+      service:
+        name: cockpit.socket
+        state: restarted
+      when: abc.rc ==0
+...

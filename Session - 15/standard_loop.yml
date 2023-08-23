@@ -1,0 +1,17 @@
+---
+- name: Ansible simple loop playbook
+  hosts: all
+  become: true
+  tasks:
+    - name: Adding user accounts
+      user:
+        name: "{{ item }}"
+        state: present
+      with_items:
+        - vikas
+        - amit
+        - greta
+        - tarun
+        - deepika
+...
+

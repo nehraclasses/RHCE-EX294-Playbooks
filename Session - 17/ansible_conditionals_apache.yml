@@ -1,0 +1,17 @@
+---
+- name: Example of conditionals in Ansible
+  hosts: all
+  become: true
+  tasks:
+    - name: Install the apache web server on the RedHat based machines.
+      yum:
+        name: httpd
+        state: installed
+      when: ansible_distribution == 'RedHat'
+
+    - name: Install the apache web server on the Ubuntu based machines.
+      apt:
+        name: apache2
+        state: present
+      when: ansible_distribution == 'Ubuntu'
+...

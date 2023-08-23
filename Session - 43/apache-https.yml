@@ -1,0 +1,85 @@
+---
+- name: Apache HTTPS Server Configuration Playbook
+  hosts: node1
+  become: true
+  tasks:
+    - name: Setting up the static hostname in the server machine.
+      hostname:
+        name: node1.nehraclasses.local
+        use: systemd
+
+    - name: Installing Apache & OpenSSL packages in the machine.
+      dnf:
+        name:
+          - httpd
+          - openssl
+          - mod_ssl
+        state: latest
+
+    - name: Generating the Private Key File with the name as localhost.key
+      openssl_privatekey:
+        path: /etc/pki/tls/private/localhost.key
+        size: 2048
+
+    - name: Generating Certificate Sign Request (CSR)
+      community.crypto.x509_certificate:
+        path: '/etc/pki/tls/certs/localhost.crt'
+        privatekey_path: '/etc/pki/tls/private/localhost.key'
+        force: true
+        provider: selfsigned
+
+    - name: Creating /var/www/html/nehraclassesweb/ directory for the document root.
+      file:
+        path: /var/www/html/nehraclassesweb/
+        mode: '0755'
+        state: directory
+
+    - name: Copying the image file to the /var/www/html/nehraclassesweb/ directory.
+      ansible.builtin.copy:
+        src: /home/vikasnehra/NehraClassesLogo.png
+        dest: /var/www/html/nehraclassesweb/NehraClassesLogo.png
+        mode: '0644'
+
+    - name: Creating HTTPD configuration file in the /etc/httpd/conf.d/ directory.
+      copy:
+       dest: "/etc/httpd/conf.d/httpd.conf"
+       content: |
+         <VirtualHost *:443>
+         SSLEngine on
+         SSLCertificateFile /etc/pki/tls/certs/localhost.crt
+         SSLCertificateKeyFile /etc/pki/tls/private/localhost.key
+         ServerName node1.nehraclasses.local
+         DocumentRoot /var/www/html/nehraclassesweb/
+         </VirtualHost>
+
+    - name: Creating the website index file.
+      copy:
+        dest: "/var/www/html/nehraclassesweb/index.html"
+        content: |
+          <h1>Nehra Classes Are Awesome.</h1>
+          <i>This page is hosted on node1 machine using apache.</i>
+          <img src="/NehraClassesLogo.png" width="300" height="300" />
+
+    - name: Making changes in the /etc/httpd/conf.d/ssl.conf file. (Set the ServerName)
+      lineinfile:
+        dest: /etc/httpd/conf.d/ssl.conf
+        regexp: '^#ServerName'
+        line: 'ServerName node1.nehraclasses.local:443'
+
+    - name: Allowing Apache to modify the files in the /var/www/html/nehraclassesweb/ directory. (SELinux Context)
+      command: restorecon -Rv /var/www/html/
+
+    - name: Allowing HTTPS traffic in the firewall.
+      firewalld:
+        service: https
+        zone: public
+        permanent: true
+        immediate: true
+        state: enabled
+
+    - name: Starting & enabling the httpd service.
+      service:
+        name: httpd
+        state: started
+        enabled: yes
+...

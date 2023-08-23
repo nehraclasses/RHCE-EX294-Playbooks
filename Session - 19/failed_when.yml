@@ -1,0 +1,13 @@
+---
+- name: failed when example
+  hosts: all
+  become: true
+  tasks:
+    - debug:
+        msg: "Incompatible Operating System."
+      failed_when: ansible_distribution == 'RedHat'
+    - name: Installing Apache Web Server
+      apt:
+        name: apache2
+        state: latest
+...

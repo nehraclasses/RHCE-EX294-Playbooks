@@ -1,0 +1,24 @@
+---
+- name: Playbook to add multiple users and groups using hash loops
+  hosts: node1
+  become: true
+  tasks:
+    - name: Adding the groups.
+      group:
+        name: "{{ item }}"
+        state: present
+      with_items:
+        - nehraclasses
+        - youtube
+        - google
+    - name: Adding local user accounts.
+      user:
+        name: "{{ item.usr }}"
+        state: present
+        groups: "{{ item.grp }}"
+      loop:
+        - { usr: preeti, grp: nehraclasses }
+        - { usr: mohan, grp: youtube }
+        - { usr: shekhar, grp: google }
+        - { usr: shiva, grp: wheel }
+...

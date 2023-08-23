@@ -1,0 +1,12 @@
+---
+- name: Inventory Variable Example
+  hosts: all
+  become: true
+  tasks:
+      - name: Creating directories.
+        file:
+            path: "{{ dir }}"
+            state: directory
+      - debug:
+           msg: "{{ dir }}"
+...

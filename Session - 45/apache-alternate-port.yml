@@ -1,0 +1,95 @@
+---
+- name: Alternate Port Apache HTTP Server Configuration Playbook
+  hosts: node1
+  become: true
+  tasks:
+    - name: Setting up the static hostname in the server machine.
+      hostname:
+        name: node1.nehraclasses.com
+        use: systemd
+
+    - name: Making entries in the /etc/hosts file for the server hostname & IP Address
+      lineinfile:
+        dest: /etc/hosts
+        line: 192.168.229.129 www.nehraclasses.com node1
+        insertafter: EOF
+
+    - name: Installing Apache & SELinux Policy packages in the machine.
+      dnf:
+        name:
+          - httpd
+          - policycoreutils-python-utils
+        state: latest
+
+    - name: Creating /nehraclassesweb/ directory for the document root.
+      file:
+        path: /nehraclassesweb/
+        mode: '0755'
+        state: directory
+        owner: apache
+        group: apache
+
+    - name: Copying the image file to the /nehraclassesweb/ directory.
+      ansible.builtin.copy:
+        src: /home/vikasnehra/NehraClassesLogo.png
+        dest: /nehraclassesweb/NehraClassesLogo.png
+        mode: '0644'
+
+    - name: Creating the website index file in the /nehraclassesweb/ directory.
+      copy:
+        dest: "/nehraclassesweb/index.html"
+        content: |
+          <img src="/NehraClassesLogo.png" width="500" height="500" />
+          <h1>Nehra Classes Are Awesome.</h1>
+          <i>This page is hosted on node1 using port 82 for name based apache virtual hosting.</i>
+
+    - name: Creating HTTPD configuration file in the /etc/httpd/conf.d/ directory.
+      copy:
+       dest: "/etc/httpd/conf.d/httpd.conf"
+       content: |
+           <VirtualHost 192.168.229.229:82>
+           ServerAdmin root@node1.nehraclasses.com
+           ServerAlias nehraclasses.com node1
+           DocumentRoot /nehraclassesweb/
+           ServerName www.nehraclasses.com
+           ErrorLog logs/www.nehraclasses.com-error_log
+           CustomLog logs/www.nehraclasses.com-access_log common
+           <Directory /nehraclassesweb/>
+           Options Indexes FollowSymLinks
+           AllowOverride None
+           Require all granted
+           </Directory>
+           </VirtualHost>
+
+    - name: Copying /etc/httpd/conf/httpd.conf file using ansible jinja template.
+      template:
+        src: httpd2.conf.j2
+        dest: /etc/httpd/conf/httpd.conf
+        force: true
+
+    - name: Allowing Apache to modify the files in the /nehraclassesweb/ directory. (SELinux Context)
+      community.general.sefcontext:
+        target: '/nehraclassesweb(/.*)?'
+        setype: httpd_sys_content_t
+        state: present
+
+    - name: Applying new SELinux file context to filesystem /nehraclassesweb/
+      command: restorecon -Rv /nehraclassesweb/
+
+    - name: Adding TCP port 82 in SELinux
+      command: semanage port -a -t http_port_t -p tcp 82
+
+    - name: Allowing HTTP traffic in the firewall.
+      firewalld:
+        port: 82/tcp
+        zone: public
+        permanent: true
+        immediate: true
+        state: enabled
+
+    - name: Starting & enabling the httpd service.
+      service:
+        name: httpd
+        state: started
+        enabled: yes
+...

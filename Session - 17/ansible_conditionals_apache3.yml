@@ -1,0 +1,11 @@
+---
+- name: Example of conditionals in Ansible
+  hosts: all
+  become: true
+  tasks:
+    - name: Install the apache web server on the RHEL based machine and having major version 9 or CentOS based machines having major version 8.
+      yum:
+        name: httpd
+        state: installed
+      when: (ansible_distribution == 'RedHat' and ansible_distribution_major_version == '9') or (ansible_distribution == 'centos' and ansible_distribution_major_version == '8')
+...

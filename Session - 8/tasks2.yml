@@ -1,0 +1,37 @@
+---
+- name: daily tasks playbook.
+  hosts: RHEL
+  gather_facts: false
+  tasks:
+    - name: Create directory /tmp/testdir
+      file:
+          path: /tmp/testdir
+          state: directory
+    - name: Copy /etc/fstab file to /tmp/testdir
+      copy:
+          src: /etc/fstab
+          dest: /tmp/testdir
+    - name: Installing packages.
+      yum:
+         name: 
+           - httpd
+           - wget
+    - name: Starting and enabling httpd service.
+      service:
+            name: httpd
+            state: started
+            enabled: true
+
+- name: Deply the Apache Server in Ubuntu Machines.
+  hosts: Ubuntu
+  task:
+     - name: Installing the packages.    
+       apt:
+           name: apache2
+           state: present   
+    - name: Starting and enabling Apache service.
+      service:
+              name: apache2
+              state: started
+              enabled: true
+...

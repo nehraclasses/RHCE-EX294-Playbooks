@@ -1,0 +1,15 @@
+---
+- name: Install httpd
+  hosts: node1
+  become: true
+  tasks:
+    - name: Install httpd
+      yum:
+        name: "{{ ansible_facts['ansible_local']['httpd']['basic']['package'] }}"
+        state: latest
+    - name: Start and enable httpd
+      service:
+        name: "{{ ansible_facts['ansible_local']['httpd']['basic']['service'] }}"
+        state: "{{ ansible_facts['ansible_local']['httpd']['basic']['state'] }}"
+        enabled: "{{ ansible_facts['ansible_local']['httpd']['basic']['enabled'] }}"
+...

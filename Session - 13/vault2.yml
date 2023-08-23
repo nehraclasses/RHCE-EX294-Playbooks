@@ -1,0 +1,12 @@
+---
+- name: Ansible vault playbook
+  hosts: all
+  become: true
+  vars_files:
+    - /home/vikasnehra/crypt.yml
+  tasks:
+    - name: creating user account and setting the password.
+      user:
+        name: greta
+        password: "{{ pw }}"
+...

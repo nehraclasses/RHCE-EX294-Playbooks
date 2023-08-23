@@ -1,0 +1,25 @@
+---
+- name: Control when handlers run using meta directive
+  hosts: node3
+  become: true
+  tasks:
+    - name: Adding the EPEL repository
+      command: sudo dnf install -y https://dl.fedoraproject.org/pub/epel/epel-release-latest-9.noarch.rpm
+    - name: Installing the Nginx web server
+      dnf:
+        name: nginx
+        state: latest
+      notify:
+        - Start Nginx
+    - name: Flush handlers
+      meta: flush_handlers
+    - name: Install Neofetch
+      dnf:
+        name: neofetch
+        state: latest
+  handlers:
+    - name: Start Nginx
+      service:
+        name: nginx
+        state: started
+...

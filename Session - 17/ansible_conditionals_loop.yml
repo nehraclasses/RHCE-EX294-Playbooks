@@ -1,0 +1,10 @@
+---
+- name: Ansible tasks to work on Ansible When
+  hosts: node1
+  become: true
+  tasks:
+    - name: Run with items greater than 5
+      ansible.builtin.command: echo {{ item }}
+      loop: [ 0, 2, 4, 6, 8, 10 ]
+      when: item > 5
+...

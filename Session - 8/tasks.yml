@@ -1,0 +1,28 @@
+---
+- name: daily tasks playbook.
+  hosts: RHEL
+  gather_facts: false
+  user: vikasnehra
+  become: true
+  tasks:
+    - name: Create directory /tmp/testdir
+      file:
+          path: /tmp/testdir
+          state: directory
+    - name: Copy /etc/fstab file to /tmp/testdir
+      copy:
+          src: /etc/fstab
+          dest: /tmp/testdir
+    - name: Installing packages.
+      yum:
+         name: 
+           - httpd
+           - wget
+    - name: Starting and enabling httpd service.
+      service:
+            name: httpd
+            state: started
+            enabled: true
+    - name: Installing Firewalld
+      import_tasks: /home/vikasnehra/playbooks/firewall.yml
+...

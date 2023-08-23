@@ -1,0 +1,9 @@
+---
+- name: Hello World Printing Playbook
+  hosts: all
+  gather_facts: true
+  tasks:
+    - name: Printing Hello World
+      debug:
+        msg: Hello Ansible World
+...  

@@ -1,0 +1,19 @@
+---
+- name: daily tasks playbook.
+  hosts: RHEL
+  gather_facts: false
+  user: vikasnehra
+  become: true
+  tasks:
+    - name: Single line format task example.
+      file: path=/tmp/testdir state=directory
+
+    - name: Multi line format task example.
+      copy: src=/etc/fstab
+            dest=/tmp/testdir
+
+    - name: Dictionary format task example.
+      service:
+           name: httpd
+           state: started
+           enabled: true

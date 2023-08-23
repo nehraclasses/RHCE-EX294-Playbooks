@@ -1,0 +1,32 @@
+---
+- name: Install Apache on RHEL server
+  hosts: node1
+  become: true
+  tasks:
+    - name: Install the latest version of Apache
+      dnf:
+        name: httpd
+        state: latest
+    - name: Configure Apache
+      copy:
+        content: "Nehra Classes Are Awesome."
+        dest: /var/www/html/index.html
+        owner: apache
+        group: apache
+        mode: 0644
+      notify:
+        - Configure Firewall
+        - Start Apache
+  handlers:
+    - name: Start Apache
+      service:
+        name: httpd
+        state: started
+    - name: Configure Firewall
+      firewalld:
+        permanent: yes
+        immediate: yes
+        service: http
+        state: enabled
+...
+

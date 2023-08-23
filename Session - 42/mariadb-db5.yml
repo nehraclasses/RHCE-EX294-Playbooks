@@ -1,0 +1,17 @@
+---
+- name: MariaDB
+  hosts: node1
+  gather_facts: true
+  become: true
+  vars:
+    mysql_root_password: "P@$$w0rd"
+  tasks:
+       - name: Make sure there is neither a database with name 'foo', nor one with name 'bar'
+         mysql_db:
+           name:
+            - foo
+            - bar
+           state: absent
+           login_user: root
+           login_password: "{{ mysql_root_password }}"
+...

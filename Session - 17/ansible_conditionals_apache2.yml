@@ -1,0 +1,11 @@
+---
+- name: Example of conditionals in Ansible
+  hosts: all
+  become: true
+  tasks:
+    - name: Install FTP package if the node is RedHat based machines & having major version 7.
+      yum:
+        name: ftp
+        state: installed
+      when: ansible_distribution == 'RedHat' or 'CentOS'
+...

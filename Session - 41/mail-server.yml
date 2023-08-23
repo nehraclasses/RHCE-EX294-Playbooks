@@ -1,0 +1,42 @@
+---
+- name: SMTP Relay Mail Server Configuration Using Ansible Playbook
+  hosts: node1
+  become: true
+  tasks:
+    - name: Setting up the static hostname in the machine.
+      hostname:
+        name: mail-server.nehraclasses.local
+        use: systemd
+
+    - name: Installing sendmail packages in the machine.
+      dnf:
+        name:
+          - sendmail*
+          - procmail
+          - s-nail
+          - make
+        state: latest
+
+    - name: Creating authinfo file in the /etc/mail directory having thentication information.
+      template:
+        src: authinfo.j2
+        dest: /etc/mail/authinfo
+
+    - name: Copying sendmail configuration file in the /etc/mail directory.
+      template:
+        src: sendmail.mc.j2
+        dest: /etc/mail/sendmail.mc
+        force: true
+
+    - name: Making changes in the sendmail.cf file using m4 processor with the help of sendmail.mc file.
+      shell: m4 /etc/mail/sendmail.mc > /etc/mail/sendmail.cf
+
+    - name: Creating encypted database file (authinfo.db) using authinfo file.
+      shell: makemap hash /etc/mail/authinfo < /etc/mail/authinfo
+
+    - name: Starting & enabling the sendmail service.
+      service:
+        name: sendmail
+        state: started
+        enabled: yes
+...

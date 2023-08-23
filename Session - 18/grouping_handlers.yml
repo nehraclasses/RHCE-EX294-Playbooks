@@ -1,0 +1,21 @@
+---
+- name: Grouping the handlers.
+  hosts: node1
+  become: true
+  tasks:
+     - name: Restart services on remote target
+       command: echo "This task restarts the services."
+       notify: "restart services"
+  handlers:
+    - name: Restart Apache
+      service:
+        name: httpd
+        state: restarted
+      listen: "restart services"
+    - name: Restart Rsyslog
+      service:
+        name: rsyslog
+        state: restarted
+      listen: "restart services"
+...
+

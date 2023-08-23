@@ -1,0 +1,17 @@
+---
+- name: Ansible blocks example
+  hosts: all
+  tasks:
+    - block:
+        - name: Installing HTTPD latest package
+          yum:
+            name: httpd
+            state: latest
+      
+        - name: Starting HTTPD service.
+          service:
+            name: httpd
+            state: started
+      become: yes
+      when: ansible_facts['distribution'] == 'RedHat'
+...

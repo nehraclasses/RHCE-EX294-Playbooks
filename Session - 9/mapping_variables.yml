@@ -1,0 +1,19 @@
+---
+- hosts: RHEL
+  become: yes
+  tasks:
+    - name: Create new users.
+      user:
+        name: '{{ item.name }}'
+        uid: '{{ item.uid }}'
+        state: present
+      loop:
+        - name: vikas
+          uid: 1020
+        - name: amit
+          uid: 1030
+        - name: greta
+          uid: 1040
+
+
+

@@ -1,0 +1,25 @@
+---
+- name: Example of string type playbook variables.
+  hosts: RHEL
+  become: true
+  vars_files:
+    - /home/vikasnehra/playbooks/myvars.yml
+  tasks:
+    - name: Installing Apache HTTPD Server.
+      yum:
+        name: "{{ apache }}"
+        state: installed
+    - name: Starting & enabling the httpd service.
+      service:
+          name: "{{ apache }}"
+          state: started
+          enabled: true
+    - name: Creating "{{ apache_root }}" directory.
+      file:
+        path: "{{ apache_root }}"
+        state: directory
+    - name: Creating index.html page inside "{{ apache_root }}"
+      copy:
+        content: "Welcome To Nehra Classes"
+        dest: "{{ apache_root }}/index.html"
+...

@@ -1,0 +1,11 @@
+---
+- name: Example of conditionals in Ansible
+  hosts: RHEL
+  become: true
+  tasks:
+    - name: Install the zsh package if the memory (RAM) is more than 2 GB.
+      yum:
+        name: zsh
+        state: installed
+      when: ansible_memtotal_mb > 1500
+...

@@ -1,0 +1,16 @@
+---
+- name: Ansible loop playbook for yum module
+  hosts: node1
+  become: true
+  tasks:
+    - name: Using yum with loop
+      yum:
+        name: "{{ item }}"
+        state: present
+      with_items:
+        - zsh
+        - httpd
+        - vsftpd
+        - ftp
+        - wget
+...

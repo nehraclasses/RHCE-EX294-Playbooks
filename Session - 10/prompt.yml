@@ -1,0 +1,18 @@
+---
+- name: Command Line Variable With Prompt Example
+  hosts: RHEL
+  become: true
+  vars_prompt:
+            - name: user_name
+              prompt: "please mention the username"
+              private: no
+            - name: password
+              prompt: "please set the password"
+              private: yes
+  tasks:
+        - name: Adding user and applying the password
+          user:
+            name: "{{ user_name }}"
+            state: present
+            password: "{{ password | password_hash ('sha512') }}"
+...    

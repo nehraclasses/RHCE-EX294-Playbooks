@@ -1,0 +1,64 @@
+---
+- name: Nginx HTTPS Server Configuration Playbook
+  hosts: node1
+  become: true
+  tasks:
+    - name: Setting up the static hostname in the server machine.
+      hostname:
+         name: nginx.nehraclasses.in
+         use: systemd
+
+    - name: Installing Nginx & OpenSSL packages in the machine.
+      dnf:
+        name:
+          - nginx
+          - openssl
+          - mod_ssl
+        state: latest
+
+    - name: Creating /etc/pki/nginx/private/ directory for the SSL private key file.
+      file:
+        path: /etc/pki/nginx/private/
+        mode: '0755'
+        state: directory
+
+    - name: Copying the nginx configuration file to /etc/nginx directory.
+      template:
+        src: /home/vikasnehra/nginx.conf.j2
+        dest: /etc/nginx/nginx.conf
+        force: true
+
+    - name: Generating the Private Key File with the name as server.key
+      openssl_privatekey:
+        path: /etc/pki/nginx/private/server.key
+        size: 2048
+
+    - name: Generating Certificate Sign Request (CSR)
+      community.crypto.x509_certificate:
+        path: '/etc/pki/nginx/server.crt'
+        privatekey_path: '/etc/pki/nginx/private/server.key'
+        force: true
+        provider: selfsigned
+
+    - name: Creating the website index file.
+      copy:
+        dest: "/usr/share/nginx/html/index.html"
+        content: |
+          <h1>Nehra Classes Are Awesome.</h1>
+          <i>This page is hosted on node1 machine using nginx.</i>
+        force: true
+
+    - name: Allowing HTTPS traffic in the firewall.
+      firewalld:
+        service: https
+        zone: public
+        permanent: true
+        immediate: true
+        state: enabled
+
+    - name: Starting & enabling the nginx service.
+      service:
+        name: nginx
+        state: started
+        enabled: yes
+...

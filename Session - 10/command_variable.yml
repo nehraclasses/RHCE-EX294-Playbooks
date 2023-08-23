@@ -1,0 +1,11 @@
+---
+- name: Command Line Variable Example
+  hosts: RHEL
+  become: true
+  tasks:
+      - name: Adding user and applying the password
+        user:
+            name: "{{ user_name }}"
+            state: present
+            password: "{{ password }}"
+...

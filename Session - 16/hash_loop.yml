@@ -1,0 +1,16 @@
+---
+- name: Playbook to add multiple users using hash loops
+  hosts: node1
+  become: true
+  tasks:
+    - name: Adding local user accounts.
+      user:
+        name: "{{ item.name }}"
+        state: present
+        groups: "{{ item.groups }}"
+      loop:
+        - { name: 'rahul', groups: 'wheel' }
+        - { name: 'rohan', groups: 'wheel' }
+        - { name: 'anuj', groups: 'root' }
+        - { name: 'harsha', groups: 'root' }
+...

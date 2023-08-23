@@ -1,0 +1,43 @@
+---
+- name: MariaDB
+  hosts: node1
+  gather_facts: true
+  become: true
+  vars:
+    mysql_root_password: "P@$$w0rd"
+  tasks:
+    - name: install mariadb
+      yum:
+        name:
+          - mariadb-server
+          - python3-PyMySQL
+        state: latest
+    - name: start mariadb
+      service:
+        name: mariadb
+        enabled: true
+        state: started
+    - name: mysql_root_password
+      mysql_user:
+        login_user: root
+        login_password: redhat
+        user: root
+        check_implicit_admin: true
+        password: "{{ mysql_root_password }}"
+        host: localhost
+    - name: remove remote root
+      mysql_user:
+        check_implicit_admin: true
+        login_user: root
+        login_password: "{{ mysql_root_password }}"
+        user: root
+        host: "{{ ansible_fqdn }}"
+        state: absent
+...
+
+
+
+
+
+
+

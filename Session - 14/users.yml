@@ -1,0 +1,18 @@
+---
+- name: User account creation playbook
+  hosts: all
+  become: true
+  tasks:
+    - name: Adding user vikas
+      user:
+        name: vikas
+        state: present
+    - name: Adding user amit
+      user:
+        name: amit
+        state: present
+    - name: Adding user greta
+      user:
+        name: greta
+        state: present
+...

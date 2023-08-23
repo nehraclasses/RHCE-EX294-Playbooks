@@ -1,0 +1,7 @@
+---
+- hosts: RHEL
+  tasks:
+    - name: Ansible Built-in Variables Use
+      debug:
+        msg: "{{ hostvars }}"
+...

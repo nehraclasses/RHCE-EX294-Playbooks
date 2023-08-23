@@ -1,0 +1,12 @@
+---
+- name: Ansible vault playbook
+  hosts: all
+  become: true
+  vars:
+    pw: redhat
+  tasks:
+    - name: creating user account and setting the password.
+      user:
+        name: vikas
+        password: "{{ pw }}"
+...

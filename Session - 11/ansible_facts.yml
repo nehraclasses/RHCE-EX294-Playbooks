@@ -1,0 +1,11 @@
+---
+- name: Ansible facts use case example playbook.
+  hosts: all
+  become: true
+    #gather_facts: true
+  tasks:
+        - name: Capture the kernel version information.
+          copy:
+            content: "The available kernel version is {{ ansible_kernel }}"
+            dest: /tmp/kernel_version.txt
+...

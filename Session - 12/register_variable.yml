@@ -1,0 +1,11 @@
+---
+- name: Registering the variable in Ansible.
+  hosts: all
+  tasks:
+    - name: Check the machine hostname.
+      command: hostname
+      register: abc
+
+    - debug:
+        var: abc.stdout
+...

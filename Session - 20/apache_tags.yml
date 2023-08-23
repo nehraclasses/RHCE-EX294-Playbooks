@@ -1,0 +1,45 @@
+---
+- name: Apache Web Server Configuration Playbook
+  hosts: node3
+  become: true
+  tasks:
+    - name: Installing Apache Latest Packages
+      yum:
+        name: httpd
+        state: latest
+      tags: pack_tag
+
+    - name: Starting & Enabling Apache HTTPD Service
+      service:
+        name: httpd
+        state: started
+        enabled: true
+      tags: serv_tag
+
+    - name: Setting Up Apache Web Server
+      copy:
+        content: "Nehra Classes Are Awesome."
+        dest: /var/www/html/index.html
+      tags: index_tag
+
+    - name: Restarting Apache HTTPD Service
+      service:
+        name: httpd
+        state: restarted
+      tags: 
+        - restart_tag
+        - service_tag  
+
+    - name: Allowing HTTP Traffic in the Firewall.
+      firewalld:
+        service: http
+        permanent: yes
+        state: enabled
+      tags: firewall_tag
+
+    - name: Reload the Firewall Service
+      service:
+        name: firewalld
+        state: reloaded
+      tags: firewall_tag
+...
